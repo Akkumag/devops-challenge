@@ -1,0 +1,33 @@
+name: intern-task-app ci
+
+on:
+  pull_request:
+    paths:
+      - "intern-task-app/**"
+  push:
+    branches: [main]
+    paths:
+      - "intern-task-app/**"
+
+jobs:
+  floor-check:
+    # Syntax/schema only — never builds a cluster, never deploys, never
+    # judges correctness. Confirms the Dockerfile builds and the k8s YAML
+    # is schema-valid; nothing more. The real review is a human's.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: intern-task-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dockerfile builds
+        run: docker build -t intern-task-app:ci .
+
+      - name: Install kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Kubernetes manifests are schema-valid
+        run: kubeconform -summary -strict k8s/
