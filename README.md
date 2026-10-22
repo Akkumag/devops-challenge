@@ -1,12 +1,12 @@
 # devops-challenge
 
-Two independent take-home challenges, each self-contained in its own folder:
+Two take-home challenges that build on each other, in separate folders:
 
 - [`intern-task-app/`](intern-task-app/) — containerize and deploy a small
-  app to Kubernetes.
+  app to Kubernetes. Do this one first.
 - [`intern-task-terraform/`](intern-task-terraform/) — write an AWS
-  Terraform module against a spec.
+  Terraform module that provisions an instance to actually run the app
+  from the task above. Needs that task's Dockerfile to exist in your
+  branch first (doesn't need to be merged).
 
-Each has its own README with the actual task. You only need to work in the
-one folder you've been assigned — nothing in either task depends on the
-other.
+Each has its own README with the actual task.

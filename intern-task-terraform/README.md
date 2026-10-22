@@ -24,6 +24,12 @@ plan` compute a real plan against fake credentials without ever calling
 AWS, which is what both you and CI need since nobody has a real account
 here.
 
+This task builds on [`../intern-task-app/`](../intern-task-app/) — the
+instance you provision here needs to actually run the app from that task,
+not a stand-in service. You'll need that task's Dockerfile to exist (in
+your branch — it doesn't need to be merged) before this one makes sense.
+Do it first, or alongside.
+
 ## What the Terraform module must do
 
 Using the [`aws`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
@@ -33,11 +39,17 @@ provider, describe a single EC2 instance, bootstrapped entirely via
 **The instance itself**, via `user_data`, must:
 
 - Create a non-root user with passwordless sudo.
-- Install and enable (as a proper systemd service, survives a reboot) a
-  web server that responds on some port of your choosing.
-- Configure the host's own firewall so that only the port your service
+- Install Docker, then build and run (as a proper systemd-managed
+  container, survives a reboot) the image from `intern-task-app`'s
+  Dockerfile — not a generic web server. However you get the Dockerfile
+  and app source onto the instance (embed it, fetch it, whatever) is your
+  call; it just has to be the real thing, built the same way it's built in
+  the other task.
+- Configure the host's own firewall so that only the port the app
   actually listens on is reachable — not "disable the firewall," not
-  "allow everything."
+  "allow everything." That port is whatever `intern-task-app`'s Dockerfile
+  says it is, not a free choice anymore — check the other task's README
+  if you haven't done it yet.
 
 **Re-running `plan` must not show the instance needing replacement.** AWS
 can't push updated `user_data` to an instance that's already running —
@@ -58,10 +70,10 @@ and why in the PR.
   required for that to be true, and make sure you've added it, not just
   the pieces that are easy to remember.
 - A security group that only allows: SSH from one specific CIDR (make it a
-  variable, don't hardcode an IP), and your service's port from anywhere.
+  variable, don't hardcode an IP), and the app's actual port from anywhere.
   Nothing else. `0.0.0.0/0` on SSH is a fail here, not a shortcut.
 
-**Outputs**: the instance's public IP, and the port your service listens on.
+**Outputs**: the instance's public IP, and the app's port.
 
 Variables should have sensible defaults where a default makes sense (the
 AMI ID, for instance — it's never actually launched, so any plausible
@@ -100,6 +112,9 @@ review.
 
 ## What we're looking for in the PR
 
+- Does the instance actually run `intern-task-app`'s container, on that
+  app's actual port — or did you build something that happens to satisfy
+  the letter of the spec with a different service entirely?
 - Is the subnet actually internet-reachable, or does it just have a CIDR
   block and nothing that makes it public?
 - Is the security group actually least-privilege, or does it default to
