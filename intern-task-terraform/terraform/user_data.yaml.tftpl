@@ -5,3 +5,17 @@ users:
     groups: [sudo]
     shell: /bin/bash
     sudo: "ALL=(ALL) NOPASSWD:ALL"
+
+packages:
+  - docker.io
+
+write_files:
+  - path: /opt/intern-task-app/Dockerfile
+    encoding: b64
+    content: ${base64encode(dockerfile)}
+  - path: /opt/intern-task-app/app/app.py
+    encoding: b64
+    content: ${base64encode(app_py)}
+
+runcmd:
+  - docker build -t intern-task-app:local /opt/intern-task-app
