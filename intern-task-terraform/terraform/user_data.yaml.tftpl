@@ -33,6 +33,10 @@ write_files:
       WantedBy=multi-user.target
 
 runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow ${app_port}/tcp
+  - ufw --force enable
   - docker build -t intern-task-app:local /opt/intern-task-app
   - systemctl daemon-reload
   - systemctl enable --now intern-task-app
