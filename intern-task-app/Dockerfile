@@ -5,4 +5,5 @@ WORKDIR /app
 COPY app/app.py .
 EXPOSE 8080
 USER 10001
+STOPSIGNAL SIGINT
 CMD ["python", "app.py"]
