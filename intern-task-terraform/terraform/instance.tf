@@ -8,4 +8,12 @@ resource "aws_instance" "app" {
   tags = {
     Name = "intern-task-app"
   }
+
+  lifecycle {
+    # cloud-init only runs user_data on first boot, so changes can't be
+    # applied to a running instance. Use `terraform apply -replace` to
+    # roll out a new user_data deliberately.
+    ignore_changes = [user_data]
+  }
+
 }
