@@ -1,0 +1,7 @@
+#cloud-config
+users:
+  - default
+  - name: deploy
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
