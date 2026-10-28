@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - "intern-task-terraform/**"
+      - ".github/workflows/intern-task-terraform-ci.yml"
   push:
     branches: [main]
     paths:
       - "intern-task-terraform/**"
+      - ".github/workflows/intern-task-terraform-ci.yml"
   workflow_dispatch:
 
 jobs:
