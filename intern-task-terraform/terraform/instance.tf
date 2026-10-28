@@ -15,5 +15,4 @@ resource "aws_instance" "app" {
     # roll out a new user_data deliberately.
     ignore_changes = [user_data]
   }
-
 }
